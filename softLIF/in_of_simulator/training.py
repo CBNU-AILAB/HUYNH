@@ -1,10 +1,12 @@
 import time
 import argparse
+
 import torch
 import torchvision
 import torch.nn as nn
 import torch.optim as optim
-from model import AlexNet
+
+from new_simulator.softLIF.model import AlexNet
 
 def current_conversion(data, gain=1., bias=0.):
     return data * gain + bias
@@ -75,6 +77,7 @@ def app(opt):
         torchvision.datasets.CIFAR10(
             opt.data,
             train=True,
+            download=True,
             transform=torchvision.transforms.Compose([
                 torchvision.transforms.RandomCrop(24),
                 torchvision.transforms.ToTensor(),
@@ -93,7 +96,7 @@ def app(opt):
                 torchvision.transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])),
         batch_size=opt.batch_size,
         num_workers=opt.num_workers)
-    model = AlexNet(num_classes=opt.num_class)
+    model = AlexNet(num_classes=opt.num_classes)
     model.cuda()
 
     criterion = nn.CrossEntropyLoss()
@@ -105,11 +108,8 @@ def app(opt):
     best_acc = 0
 
     for epoch in range(opt.num_epochs):
-        train(train_loader, model, criterion, optimizer)
-
-        testing(test_loader, model, criterion)
-
         start = time.time()
+        print(start)
         train_acc, train_loss = train(train_loader, model, criterion, optimizer)
         end = time.time()
         print('total time: {:.2f}s - epoch: {} - accuracy: {} - loss: {}'.format(end - start, epoch, train_acc,
@@ -133,10 +133,10 @@ def app(opt):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--data', default='data')
+    parser.add_argument('--data', default='CIFAR10')
     parser.add_argument('--num_classes', default=10, type=int)
-    parser.add_argument('--num_epochs', default=160, type=int)
-    parser.add_argument('--batch_size', default=64, type=int)
+    parser.add_argument('--num_epochs', default=100, type=int)
+    parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--num_workers', default=8, type=int)
     parser.add_argument('--lr', default=0.001, type=float)
     parser.add_argument('--momentum', default=0.9, type=float)
