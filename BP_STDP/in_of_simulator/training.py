@@ -1,18 +1,15 @@
 import argparse
-from new_simulator.population import *
-from new_simulator.InputDataLoader import DataLoader
-from new_simulator.encoder import BP_STDP_LabelEncoder, PoissonEncoder, PoissonEncoder2
-from new_simulator.learning.bp_stdp import graph_version
-from new_simulator.learning.bp_stdp import non_graph_version
-from new_simulator.plotting import *
+from population import *
+from InputDataLoader import DataLoader
+from encoder import BP_STDP_LabelEncoder, PoissonEncoder, PoissonEncoder2
 from new_simulator.graph import *
 
 
 class SNN:
     def __init__(self):
-        self.pop1 = PopulationIF(in_neurons=28*28, neurons=500, tau_ref=0., name='pop1')
-        self.pop2 = PopulationIF(in_neurons=500, neurons=150, tau_ref=0., name='pop2')
-        self.pop3 = PopulationIF(in_neurons=150, neurons=10, tau_ref=0., name='pop3')
+        self.pop1 = PopulationIF(in_neurons=28*28, neurons=500,resting=0., threshold=0.9, tau_ref=0., name='pop1')
+        self.pop2 = PopulationIF(in_neurons=500, neurons=150,resting=0., threshold=0.9, tau_ref=0., name='pop2')
+        self.pop3 = PopulationIF(in_neurons=150, neurons=10,resting=0., threshold=12.5, tau_ref=0., name='pop3')
 
     def __call__(self, t, x):
         return self._forward(t, x)
