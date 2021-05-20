@@ -29,7 +29,3 @@ class AlexNet(nn.Module):
         x = F.dropout(self.softLIF(self.fc2(x)), p=0.5)
         x = self.fc3(x)
         return x
-
-
-def alexnet(**kwargs):
-    return AlexNet(**kwargs)
