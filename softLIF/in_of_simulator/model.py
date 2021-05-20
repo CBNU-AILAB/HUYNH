@@ -23,7 +23,7 @@ class AlexNet(nn.Module):
         x = self.softLIF(self.conv3(x))
         x = self.softLIF(self.conv4(x))
         x = F.avg_pool2d(self.softLIF(self.conv5(x)), (2, 2))
-        x = x.view(-1, 256 * 6 * 6)
+        x = x.view(-1, 256)
         x = F.dropout(self.softLIF(self.fc1(x)), p=0.5)
         x = F.dropout(self.softLIF(self.fc2(x)), p=0.5)
         x = self.fc3(x)
