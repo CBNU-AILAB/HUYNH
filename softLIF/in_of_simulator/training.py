@@ -1,6 +1,15 @@
-def current_conversion(data, gain = 1., bias = 0.):
+import time
+import argparse
+import torch
+import torchvision
+import torch.nn as nn
+import torch.optim as optim
+from model import AlexNet
+
+def current_conversion(data, gain=1., bias=0.):
     return data * gain + bias
-  
+
+
 def train(train_loader, model, criterion, optimizer):
     model.train()
 
@@ -9,12 +18,11 @@ def train(train_loader, model, criterion, optimizer):
     total_loss = 0
 
     for step, (images, labels) in enumerate(train_loader):
-      
         images = images.cuda()
         labels = labels.cuda()
-        
-        #Convert to current before training
-        images = current_conversion(images) 
+
+        # Convert to current before training
+        images = current_conversion(images)
         preds = model(images)
 
         loss = criterion(preds, labels)
@@ -31,9 +39,9 @@ def train(train_loader, model, criterion, optimizer):
     train_loss = total_loss / total_images
 
     return train_acc, train_loss
-  
 
-  def testing(test_loader, model, criterion):
+
+def testing(test_loader, model, criterion):
     model.eval()
 
     total_images = 0
@@ -43,9 +51,9 @@ def train(train_loader, model, criterion, optimizer):
     for step, (images, labels) in enumerate(test_loader):
         images = images.cuda()
         labels = labels.cuda()
-        
-        #Convert to current before training
-        images = current_conversion(images) 
+
+        # Convert to current before training
+        images = current_conversion(images)
         preds = model(images)
 
         loss = criterion(preds, labels)
@@ -58,9 +66,9 @@ def train(train_loader, model, criterion, optimizer):
     val_loss = total_loss / total_images
 
     return val_acc, val_loss
-  
-  
-  def app(opt):
+
+
+def app(opt):
     print(opt)
 
     train_loader = torch.utils.data.DataLoader(
@@ -85,29 +93,29 @@ def train(train_loader, model, criterion, optimizer):
                 torchvision.transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])),
         batch_size=opt.batch_size,
         num_workers=opt.num_workers)
-
-    model = models.modified_alexnet(num_classes=opt.num_classes)
+    model = AlexNet(num_classes=opt.num_class)
     model.cuda()
 
     criterion = nn.CrossEntropyLoss()
 
     optimizer = torch.optim.SGD(model.parameters(), lr=opt.lr, momentum=opt.momentum)
 
-    lr_scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30,80])
+    lr_scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30, 80])
 
     best_acc = 0
 
     for epoch in range(opt.num_epochs):
         train(train_loader, model, criterion, optimizer)
 
-        validate(val_loader, model, criterion)
+        testing(test_loader, model, criterion)
 
         start = time.time()
         train_acc, train_loss = train(train_loader, model, criterion, optimizer)
         end = time.time()
-        print('total time: {:.2f}s - epoch: {} - accuracy: {} - loss: {}'.format(end-start, epoch, train_acc, train_loss))
+        print('total time: {:.2f}s - epoch: {} - accuracy: {} - loss: {}'.format(end - start, epoch, train_acc,
+                                                                                 train_loss))
 
-        val_acc, val_loss = validate(val_loader, model, criterion)
+        val_acc, val_loss = testing(test_loader, model, criterion)
 
         if val_acc > best_acc:
             best_acc = val_acc
@@ -120,7 +128,8 @@ def train(train_loader, model, criterion, optimizer):
             print('in test, epoch: {} - best accuracy: {} - loss: {}'.format(epoch, best_acc, val_loss))
 
         lr_scheduler.step()
-        
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
