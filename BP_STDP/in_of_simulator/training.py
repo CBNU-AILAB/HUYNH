@@ -1,7 +1,7 @@
 import argparse
 from population import *
 from InputDataLoader import DataLoader
-from encoder import BP_STDP_LabelEncoder, PoissonEncoder, PoissonEncoder2
+from encoder import BP_STDP_LabelEncoder, PoissonEncoder
 from new_simulator.graph import *
 
 
