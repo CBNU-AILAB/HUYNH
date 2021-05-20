@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torch.nn.functional as F
 from softLIF_activation import soft_LIF
 
 
