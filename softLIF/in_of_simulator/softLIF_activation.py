@@ -8,7 +8,7 @@ class soft_LIF(torch.autograd.Function):
         '''
         :param inputs:
         :param **kwargs:
-        :param x: input tensor
+        :param currents: input currents
         :return: softLIF firing-rate
         '''
         # define parameters
