@@ -34,7 +34,7 @@ class Diehl2015_Inference(Network):
         self.add_component('exc', HomoeostasisLIFPopulation(100, frozen_threshold=True, count_spike=True))
         self.add_component('inh', LIFPopulation2(100))
         # set trained threshold
-        self.exc.threshold = trained_threshold
+        self.exc.theta = trained_threshold
 
         self.add_component('xe', Connection(self.inp, self.exc, mode='m2m', weight_initialization=trained_weight,synapse='cuba'))
         self.add_component('ei', Connection(self.exc, self.inh, mode='o2o', weight_initialization=22.5, synapse='cuba'))
